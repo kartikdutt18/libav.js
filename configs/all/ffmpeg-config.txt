@@ -33,13 +33,13 @@
 --enable-encoder=libmp3lame
 --enable-demuxer=mp3
 --enable-muxer=mp3
---enable-demuxer=ogg
---enable-muxer=ogg
 --enable-libopenh264
 --enable-muxer=mp4
+--enable-demuxer=mp4
+--enable-demuxer=ogg
+--enable-muxer=ogg
 --enable-decoder=libopenh264
 --enable-encoder=libopenh264
-
 --enable-libopus
 --enable-decoder=libopus
 --enable-encoder=libopus

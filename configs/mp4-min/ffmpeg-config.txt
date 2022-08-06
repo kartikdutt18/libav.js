@@ -1,0 +1,8 @@
+--enable-protocol=data --enable-protocol=file
+--enable-filter=aresample
+--enable-decoder=libopenh264
+--enable-encoder=libopenh264
+--enable-libopenh264
+--enable-muxer=mp4
+--enable-demuxer=mp4
+--enable-demuxer=mov

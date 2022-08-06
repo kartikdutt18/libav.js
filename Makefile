@@ -12,7 +12,7 @@ EFLAGS=\
 	-s "ASYNCIFY_IMPORTS=['libavjs_wait_reader']" \
 	-s ALLOW_MEMORY_GROWTH=1
 
-all: build-default
+all: build-mp4-min
 
 include mk/*
 
@@ -64,7 +64,7 @@ node_modules/.bin/uglifyjs:
 
 release:
 	mkdir libav.js-$(LIBAVJS_VERSION)
-	for v in default lite fat obsolete opus flac opus-flac webm webm-opus-flac mediarecorder-transcoder open-media; \
+	for v in mp4-min; \
 	do \
 	    $(MAKE) build-$$v; \
 	    cp libav-$(LIBAVJS_VERSION)-$$v.js \

@@ -34,7 +34,8 @@ const configs = [
     ["mediarecorder-openh264", ["ogg", "webm", "opus", "ipod", "aac", "flac", "swscale", "vpx", "vp8", "h264", "openh264"]],
 
     ["empty", []],
-    ["all", fs.readdirSync("fragments").filter(x => x !== "default")]
+    ["all", fs.readdirSync("fragments").filter(x => x !== "default")],
+    ["mp4-min",["openh264", "mp4"]]
 ];
 
 (async function() {

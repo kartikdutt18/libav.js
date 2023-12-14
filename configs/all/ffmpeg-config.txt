@@ -36,7 +36,7 @@
 --enable-libopenh264
 --enable-muxer=mp4
 --enable-demuxer=mp4
---enable-demuxer=ogg
+--enable-demuxer=mov--enable-demuxer=ogg
 --enable-muxer=ogg
 --enable-decoder=libopenh264
 --enable-encoder=libopenh264

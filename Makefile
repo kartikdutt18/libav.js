@@ -1,4 +1,4 @@
-LIBAVJS_VERSION=3.7.5.0.1
+LIBAVJS_VERSION=3.7.4.0.1
 EMCC=emcc
 MINIFIER=node_modules/.bin/uglifyjs -m
 CFLAGS=-Oz
@@ -12,7 +12,7 @@ EFLAGS=\
 	-s "ASYNCIFY_IMPORTS=['libavjs_wait_reader']" \
 	-s ALLOW_MEMORY_GROWTH=1
 
-all: build-mp4-min
+all: build-mp4-aac
 
 include mk/*
 
@@ -64,7 +64,7 @@ node_modules/.bin/uglifyjs:
 
 release:
 	mkdir libav.js-$(LIBAVJS_VERSION)
-	for v in mp4-min; \
+	for v in mp4-aac; \
 	do \
 	    $(MAKE) build-$$v; \
 	    cp libav-$(LIBAVJS_VERSION)-$$v.js \

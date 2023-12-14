@@ -1,0 +1,19 @@
+--enable-protocol=data --enable-protocol=file
+--enable-filter=aresample
+--enable-decoder=aac
+--enable-encoder=aac
+--enable-libopenh264
+--enable-muxer=mp4
+--enable-demuxer=mp4
+--enable-demuxer=mov
+--enable-muxer=adts
+--enable-demuxer=aac
+--enable-decoder=libopenh264
+--enable-encoder=libopenh264
+--enable-filter=acompressor --enable-filter=adeclick --enable-filter=adeclip
+--enable-filter=aecho --enable-filter=afade --enable-filter=aformat
+--enable-filter=agate --enable-filter=alimiter --enable-filter=amix
+--enable-filter=apad --enable-filter=atempo --enable-filter=atrim
+--enable-filter=bandpass --enable-filter=bandreject --enable-filter=dynaudnorm
+--enable-filter=equalizer --enable-filter=loudnorm --enable-filter=pan
+--enable-filter=amix --enable-filter=volume

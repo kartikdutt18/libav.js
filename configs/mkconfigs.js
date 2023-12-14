@@ -35,7 +35,8 @@ const configs = [
 
     ["empty", []],
     ["all", fs.readdirSync("fragments").filter(x => x !== "default")],
-    ["mp4-min",["openh264", "mp4"]]
+    ["mp4-min",["openh264", "mp4"]],
+    ["mp4-aac",["aac", "mp4", "openh264", "audio-filters" ]]
 ];
 
 (async function() {

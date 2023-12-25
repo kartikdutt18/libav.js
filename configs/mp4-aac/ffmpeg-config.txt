@@ -4,6 +4,7 @@
 --enable-encoder=aac
 --enable-libopenh264
 --enable-muxer=mp4
+--enable-parser=aac
 --enable-demuxer=mp4
 --enable-demuxer=mov
 --enable-muxer=adts

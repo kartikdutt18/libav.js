@@ -175,11 +175,11 @@ function main() {
         await libav.avformat_write_header(oc, 0);
         const decodeAudop = await decodeAudio(libav);
         let prev = 0;
-        for (const frame of decodeAudop.frames) {
-          const delta = videoFrames[videoFrames.length - 1].pts / decodeAudop.frames.length;
-          frame.pts = prev + delta;
-          prev = frame.pts;
-        }
+        // for (const frame of decodeAudop.frames) {
+        //   const delta = videoFrames[videoFrames.length - 1].pts / decodeAudop.frames.length;
+        //   frame.pts = prev + delta;
+        //   prev = frame.pts;
+        // }
         console.log(decodeAudop);
         // await libav.AVPacket_dts_s( H264_Decode_pkt, await libav.AVPacket_dts(pkt));
         await libav.AVPacket_pts_s( pkt, await libav.AVPacket_pts(H264_Decode_pkt));

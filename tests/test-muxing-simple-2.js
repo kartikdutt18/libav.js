@@ -182,12 +182,10 @@ function main() {
         // }
         console.log(decodeAudop);
         // await libav.AVPacket_dts_s( H264_Decode_pkt, await libav.AVPacket_dts(pkt));
-        await libav.AVPacket_pts_s( pkt, await libav.AVPacket_pts(H264_Decode_pkt));
+        // await libav.AVPacket_pts_s( pkt, await libav.AVPacket_pts(H264_Decode_pkt));
 
         const packets = await libav.ff_encode_multi(c, frame, pkt, decodeAudop.frames.slice(0, Math.floor(decodeAudop.frames.length / 10)), true);
         const videoPackets = await libav.ff_encode_multi(H264_c, H264_frame, H264_pkt, videoFrames, true);
-
-
 
         await libav.ff_write_multi(oc, H264_pkt, videoPackets);
         await libav.ff_write_multi(oc, pkt, packets);

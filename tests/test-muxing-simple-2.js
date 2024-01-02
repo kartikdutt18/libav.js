@@ -65,7 +65,7 @@ async function decodeAudio(libav) {
   const c = rDecoder[1];
   const pkt = rDecoder[2];
   const frame = rDecoder[3];
-  // await libav.AVPacket_duration_s(pkt, 83);
+
   const packets = await readFile(libav, audioStream.index, formatCtx, pkt);
   const frames = await libav.ff_decode_multi(c, pkt, frame, packets, true);
   return {
@@ -83,11 +83,74 @@ function main() {
     var libav;
     var oc, fmt, codec, c, frame, pkt, st, pb, frame_size;
 
-    LibAV.LibAV().then(async function(libavTemp) {
-      libav = libavTemp;
+    LibAV.LibAV().then(ret => {
+      libav = ret;
+      return new Promise(function(res, rej) {
+            if (typeof XMLHttpRequest !== "undefined") {
+                var xhr = new XMLHttpRequest();
+                xhr.responseType = "arraybuffer";
+                xhr.open("GET", "aa.mp4", true);
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200)
+                            res(xhr.response);
+                        else
+                            rej(xhr.status);
+                    }
+                };
+
+                xhr.send();
+
+            } else {
+                res(fs.readFileSync("exa.mp4").buffer);
+            }
+
+        });
+    }).then(async function(video) {
+       await libav.writeFile("tmp1.mp4", new Uint8Array(video));
+       const H264_demux = await libav.ff_init_demuxer_file("tmp1.mp4");
+       const H264_fmt_ctx = H264_demux[0];
+       const H264_streams = H264_demux[1];
+
+        var H264_si, H264_stream;
+        for (H264_si = 0; H264_si < H264_streams.length; H264_si++) {
+            H264_stream = H264_streams[H264_si];
+            if (H264_stream.codec_type === libav.AVMEDIA_TYPE_VIDEO)
+                break;
+        }
+        if (H264_si >= H264_streams.length)
+            throw new Error("Couldn't find video stream");
+
+        video_stream_idx = H264_stream.index;
+        const H264_decoder = await libav.ff_init_decoder(H264_stream.codec_id, H264_stream.codecpar);
+        const H264_Decode_c = H264_decoder[1];
+        const H264_Decode_pkt = H264_decoder[2];
+        const H264_Decode_frame = H264_decoder[3];
+        const vidframes = await libav.ff_read_multi(H264_fmt_ctx, H264_Decode_pkt);
+        const videoFrames = await libav.ff_decode_multi(H264_Decode_c, H264_Decode_pkt, H264_Decode_frame, vidframes[1][video_stream_idx], true);
+
+       const openh264Encoder = await libav.ff_init_encoder("libopenh264", {
+            ctx: {
+                bit_rate: 1000000,
+                pix_fmt: videoFrames[0].format,
+                width: videoFrames[0].width,
+                height: videoFrames[0].height
+            },
+            options: {
+               quality: "realtime",
+            }
+        });
+
+        
+        let H264_codec = openh264Encoder[0];
+        let H264_c = openh264Encoder[1];
+        let H264_frame = openh264Encoder[2];
+        let H264_pkt = openh264Encoder[3];
+
        const initEncoder = await libav.ff_init_encoder("aac", {
             ctx: {
-                bit_rate: 128000,
+                bit_rate: 1000000,
                 sample_fmt: libav.AV_SAMPLE_FMT_FLT,
                 sample_rate: 48000,
                 channel_layout: 4,
@@ -100,15 +163,33 @@ function main() {
         frame = initEncoder[2];
         pkt = initEncoder[3];
         frame_size = initEncoder[4];
-       const ret = await libav.ff_init_muxer({filename: "tmp.mp4", open: true}, [[c, 1, 48000]]);
+        console.log(videoFrames);
+
+       const ret = await libav.ff_init_muxer({filename: "tmp.mp4", open: true}, [ [H264_c, 1, 12000], [c, 1, 48000]]);
+
         oc = ret[0];
         fmt = ret[1];
         pb = ret[2];
         st = ret[3][0];
         console.log(ret, st);
         await libav.avformat_write_header(oc, 0);
-        const decodeAudop = await decodeAudio(libav)
-        const packets = await libav.ff_encode_multi(c, frame, pkt, decodeAudop.frames, true);
+        const decodeAudop = await decodeAudio(libav);
+        let prev = 0;
+        for (const frame of decodeAudop.frames) {
+          const delta = videoFrames[videoFrames.length - 1].pts / decodeAudop.frames.length;
+          frame.pts = prev + delta;
+          prev = frame.pts;
+        }
+        console.log(decodeAudop);
+        // await libav.AVPacket_dts_s( H264_Decode_pkt, await libav.AVPacket_dts(pkt));
+        await libav.AVPacket_pts_s( pkt, await libav.AVPacket_pts(H264_Decode_pkt));
+
+        const packets = await libav.ff_encode_multi(c, frame, pkt, decodeAudop.frames.slice(0, Math.floor(decodeAudop.frames.length / 10)), true);
+        const videoPackets = await libav.ff_encode_multi(H264_c, H264_frame, H264_pkt, videoFrames, true);
+
+
+
+        await libav.ff_write_multi(oc, H264_pkt, videoPackets);
         await libav.ff_write_multi(oc, pkt, packets);
         await libav.av_write_trailer(oc);
         await libav.ff_free_muxer(oc, pb);

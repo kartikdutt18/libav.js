@@ -501,6 +501,7 @@ var ff_init_muxer = Module.ff_init_muxer = function(opts, streamCtxs) {
         var ret = avcodec_parameters_from_context(codecpar, ctx[0]);
         if (ret < 0)
             throw new Error("Could not copy the stream parameters: " + ff_error(ret));
+        console.log(ctx, ctx[1], ctx[2]);
         AVStream_time_base_s(st, ctx[1], ctx[2]);
     });
 

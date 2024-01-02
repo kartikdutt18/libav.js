@@ -4,6 +4,9 @@
 --enable-encoder=aac
 --enable-libopenh264
 --enable-muxer=mp4
+--enable-muxer=mpeg1video
+--enable-muxer=mpeg
+--enable-muxer=mpeg2video
 --enable-parser=aac
 --enable-demuxer=mp4
 --enable-demuxer=mov
@@ -18,3 +21,32 @@
 --enable-filter=bandpass --enable-filter=bandreject --enable-filter=dynaudnorm
 --enable-filter=equalizer --enable-filter=loudnorm --enable-filter=pan
 --enable-filter=amix --enable-filter=volume
+--enable-demuxer=ogg
+--enable-muxer=ogg
+--enable-demuxer=matroska
+--enable-muxer=matroska --enable-muxer=webm
+--enable-muxer=ipod
+--enable-muxer=mov
+--enable-demuxer=flac
+--enable-muxer=flac
+--enable-parser=flac
+--enable-decoder=flac
+--enable-encoder=mpeg1video
+--enable-encoder=mpeg2video
+--enable-encoder=mpeg4
+--enable-decoder=mpeg4
+--enable-decoder=mpeg1video
+--enable-decoder=mpeg2video
+--enable-encoder=flac
+--enable-demuxer=mp3
+--enable-muxer=mp3
+--enable-decoder=mp3
+--enable-decoder=pcm_s16le --enable-decoder=pcm_s24le
+--enable-demuxer=wav
+--enable-encoder=pcm_s16le --enable-encoder=pcm_s24le
+--enable-muxer=wav
+--enable-demuxer=pcm_f32le
+--enable-muxer=pcm_f32le
+--enable-decoder=pcm_f32le
+--enable-encoder=pcm_f32le
+--enable-filter=amix --enable-filter=volume --enable-filter=anull

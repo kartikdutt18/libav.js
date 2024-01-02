@@ -1,6 +1,6 @@
 if (typeof process !== "undefined") {
     // Node.js
-    LibAV = require("../libav-3.7.5.0.1-default.js");
+    LibAV = require("../libav-5.0-mp4-aac.js");
     fs = require("fs");
 }
 
@@ -24,7 +24,7 @@ function main() {
     LibAV.LibAV().then(function(ret) {
         libav = ret;
 
-        return libav.ff_init_encoder("libopus", {
+        return libav.ff_init_encoder("aac", {
             ctx: {
                 bit_rate: 128000,
                 sample_fmt: libav.AV_SAMPLE_FMT_FLT,

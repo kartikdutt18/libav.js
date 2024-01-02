@@ -322,6 +322,23 @@ AVIOContext *avio_open2_js(const char *url, int flags,
     return ret;
 }
 
+AVCodecParserContext *av_parser_init_js(int codec_id)
+{
+  return av_parser_init(codec_id);
+}
+
+void av_parser_close_js(AVCodecParserContext *s)
+{
+  av_parser_close(s);
+}
+
+int av_parser_parse_js(AVCodecParserContext *s,
+    AVCodecContext *avctx, AVPacket *pkt, const uint8_t *buf, int buf_size,
+    int64_t pts, int64_t dts, int64_t pos)
+{
+  return av_parser_parse2(s, avctx, &pkt->data, &pkt->size, buf, buf_size, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
+}
+
 AVFilterContext *avfilter_graph_create_filter_js(const AVFilter *filt,
     const char *name, const char *args, void *opaque, AVFilterGraph *graph_ctx)
 {

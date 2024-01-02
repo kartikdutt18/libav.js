@@ -494,14 +494,14 @@ var ff_init_muxer = Module.ff_init_muxer = function(opts, streamCtxs) {
     var fmt = AVFormatContext_oformat(oc);
     var sts = [];
     streamCtxs.forEach(function(ctx) {
-        var st = avformat_new_stream(oc, 0);
+        var st = avformat_new_stream(oc, ctx[0]);
         if (st === 0)
             throw new Error("Could not allocate stream");
         var codecpar = AVStream_codecpar(st);
+        sts.push(st);
         var ret = avcodec_parameters_from_context(codecpar, ctx[0]);
         if (ret < 0)
             throw new Error("Could not copy the stream parameters: " + ff_error(ret));
-        console.log(ctx, ctx[1], ctx[2]);
         AVStream_time_base_s(st, ctx[1], ctx[2]);
     });
 

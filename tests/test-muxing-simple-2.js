@@ -39,7 +39,8 @@ async function decodeAudio(libav) {
   );
   const data = new Uint8Array(await response.arrayBuffer());
   const filename = `AudioPlayer0.aac`;
-  await libav.writeFile(filename, new Uint8Array(data));
+  const uint8array = new Uint8Array(data);
+  await libav.writeFile(filename, uint8array);
   // await libav.mkreadaheadfile(filename, new Uint8Array(data));
   const readDemuxer = await libav.ff_init_demuxer_file(filename);
   const formatCtx = readDemuxer[0];
@@ -165,7 +166,7 @@ function main() {
         frame_size = initEncoder[4];
         console.log(videoFrames);
 
-       const ret = await libav.ff_init_muxer({filename: "tmp.mp4", open: true}, [ [H264_c, 1, 12000], [c, 1, 48000]]);
+       const ret = await libav.ff_init_muxer({filename: "tmp.mp4", open: true}, [ [H264_c, 1, 12000],  [c, 1, 48000]]);
 
         oc = ret[0];
         fmt = ret[1];
@@ -174,11 +175,14 @@ function main() {
         console.log(ret, st);
         await libav.avformat_write_header(oc, 0);
         const decodeAudop = await decodeAudio(libav);
-        let prev = 0;
+        let prev = videoFrames[videoFrames.length - 1].pts / decodeAudop.frames.length;
         // for (const frame of decodeAudop.frames) {
         //   const delta = videoFrames[videoFrames.length - 1].pts / decodeAudop.frames.length;
-        //   frame.pts = prev + delta;
-        //   prev = frame.pts;
+        //   const pts_req = prev + delta;
+        //   const pts = pts_req * 12000 / decodeAudop.timebase.den;
+        //   frame.pts = pts;
+        //   frame.dts = pts;
+        //   prev = pts_req;
         // }
         console.log(decodeAudop);
         // await libav.AVPacket_dts_s( H264_Decode_pkt, await libav.AVPacket_dts(pkt));
@@ -187,8 +191,8 @@ function main() {
         const packets = await libav.ff_encode_multi(c, frame, pkt, decodeAudop.frames.slice(0, Math.floor(decodeAudop.frames.length / 10)), true);
         const videoPackets = await libav.ff_encode_multi(H264_c, H264_frame, H264_pkt, videoFrames, true);
 
-        await libav.ff_write_multi(oc, H264_pkt, videoPackets);
-        await libav.ff_write_multi(oc, pkt, packets);
+        await libav.ff_write_multi(oc, H264_pkt, videoPackets, true);
+        await libav.ff_write_multi(oc, pkt, packets, true);
         await libav.av_write_trailer(oc);
         await libav.ff_free_muxer(oc, pb);
         await libav.ff_free_encoder(c, frame, pkt);

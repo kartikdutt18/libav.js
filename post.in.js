@@ -597,12 +597,14 @@ var ff_init_demuxer_file = Module.ff_init_demuxer_file = function(filename, fmt)
  */
 var ff_write_multi = Module.ff_write_multi = function(oc, pkt, inPackets, interleave) {
     var step = av_interleaved_write_frame;
-    if (interleave === false) step = av_write_frame;
+    // if (interleave === false) step = av_write_frame;
     inPackets.forEach(function(inPacket) {
         var ret = av_packet_make_writable(pkt);
         if (ret < 0)
             throw new Error("Error making packet writable: " + ff_error(ret));
         ff_copyin_packet(pkt, inPacket);
+        console.log("DTS", AVPacket_dts(pkt));
+        console.log("PTS", AVPacket_pts(pkt));
         step(oc, pkt);
         av_packet_unref(pkt);
     });

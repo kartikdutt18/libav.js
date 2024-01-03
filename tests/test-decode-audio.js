@@ -102,7 +102,7 @@ async function RunExampleToTranscodeMp4(libav) {
   const encoderFramePointer = encoder[2];
   const encoderPacketHandler = encoder[3];
 
-  const muxR = await libav.ff_init_muxer({filename: "tmp.mp4", open: true}, [[encoderAVCodecContext, 1, 48000]]);
+  const muxR = await libav.ff_init_muxer({filename: "tmp.m4a", open: true}, [[encoderAVCodecContext, 1, 48000]]);
   const destinationContext = muxR[0];
   const pb = muxR[2];
 
@@ -136,11 +136,11 @@ async function RunExampleToTranscodeMp4(libav) {
   // Export to file.
  libav.av_write_trailer(destinationContext);
   await libav.ff_free_muxer(destinationContext, pb);
-  const file = await libav.readFile("tmp.mp4");
-  const blob = new Blob([file.buffer], { type: "video/mp4" });
+  const file = await libav.readFile("tmp.m4a");
+  const blob = new Blob([file.buffer], { type: "audio/aac" });
     const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "a.mp4";
+  a.download = "a.m4a";
   a.click();
 }
 

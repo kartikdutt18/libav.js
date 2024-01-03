@@ -175,45 +175,15 @@ function main() {
         console.log(ret, st);
         await libav.avformat_write_header(oc, 0);
         const decodeAudop = await decodeAudio(libav);
-        // let prev = videoFrames[videoFrames.length - 1].pts / decodeAudop.frames.length;
-        // for (const frame of decodeAudop.frames) {
-        //   const delta = videoFrames[videoFrames.length - 1].pts / decodeAudop.frames.length;
-        //   const pts_req = prev + delta;
-        //   const pts = pts_req * 12000 / decodeAudop.timebase.den;
-        //   frame.pts = pts;
-        //   frame.dts = pts;
-        //   prev = pts_req;
-        // }
-        console.log(decodeAudop);
-        // await libav.AVPacket_dts_s( H264_Decode_pkt, await libav.AVPacket_dts(pkt));
-        // await libav.AVPacket_pts_s( pkt, await libav.AVPacket_pts(H264_Decode_pkt));
 
-        const packets = await libav.ff_encode_multi(c, frame, pkt, decodeAudop.frames.slice(0, Math.floor(decodeAudop.frames.length / 20)), true);
+        const packets = await libav.ff_encode_multi(c, frame, pkt, decodeAudop.frames.slice(0, Math.floor(decodeAudop.frames.length / 18)), true);
         const videoPackets = await libav.ff_encode_multi(H264_c, H264_frame, H264_pkt, videoFrames, true);
-        let prev = 0;
-        const delta = (videoPackets[videoPackets.length - 1].pts / packets.length) * 12000.0 / 48000;
         for (const packet of packets) {
           packet.stream_index = 1;
-          packet.pts = prev;
-          packet.dts = prev;
-          prev += 1;
         }
-        let packetsToWrite = videoPackets.length + packets.length;
-        let videoIdx = 0;
-        let audioIdx = 0;
-        while (packetsToWrite > 0) {
-          if (audioIdx >= packets.length ||  (videoIdx < videoPackets.length && videoPackets[videoIdx].pts <= packets[audioIdx].pts)) {
-            await libav.ff_write_multi(oc, H264_pkt, [videoPackets[videoIdx]], true);
-            videoIdx++;
-          } else if (videoIdx >= videoPackets.length || (videoIdx < videoPackets.length && audioIdx < packets.length && videoPackets[videoIdx].pts > packets[audioIdx].pts)) {
-            console.log(packets[audioIdx]);
-            await libav.ff_write_multi(oc, pkt, [packets[audioIdx]], true);
-            audioIdx++;
-          }
-          packetsToWrite--;
-        }
-        // await libav.ff_write_multi(oc, H264_pkt, videoPackets, true);
-        // await libav.ff_write_multi(oc, pkt, packets, true);
+
+        await libav.ff_write_multi(oc, H264_pkt, videoPackets, true);
+        await libav.ff_write_multi(oc, pkt, packets, true);
         await libav.av_write_trailer(oc);
         await libav.ff_free_muxer(oc, pb);
         await libav.ff_free_encoder(c, frame, pkt);
@@ -224,10 +194,8 @@ function main() {
             a.href = URL.createObjectURL(blob);
             a.innerText = "mp4";
             document.body.appendChild(a);
-
         } else {
             fs.writeFileSync("out.aac", finFile);
-
         }
         print("Done");
     }).catch(function(err) {

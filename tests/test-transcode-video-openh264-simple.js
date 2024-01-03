@@ -26,7 +26,7 @@ function main() {
             if (typeof XMLHttpRequest !== "undefined") {
                 var xhr = new XMLHttpRequest();
                 xhr.responseType = "arraybuffer";
-                xhr.open("GET", "exa.mp4", true);
+                xhr.open("GET", "exa.webm", true);
 
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4) {
@@ -47,7 +47,7 @@ function main() {
         });
 
     }).then(function(ret) {
-        return libav.writeFile("tmp.mp4", new Uint8Array(ret));
+        return libav.writeFile("tmp.webm", new Uint8Array(ret));
 
     }).then(function() {
         return libav.ff_init_demuxer_file("tmp.webm");
